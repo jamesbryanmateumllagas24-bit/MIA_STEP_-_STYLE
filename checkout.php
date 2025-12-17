@@ -9,7 +9,7 @@ if($conn->connect_error) die("Connection failed: ".$conn->connect_error);
 $products = [
     1=>['name'=>'White Leather Sandals','price'=>359],
     2=>['name'=>'Elegant Red High Heels','price'=>1200],
-    3=>['name'=>'Hiking Boots','price'=>5599],
+    3=>['name'=>'Hiking Boots','price'=>499],
     4=>['name'=>'Elegant Nude High Heels','price'=>1200],
     5=>['name'=>'Doll Shoes','price'=>269],
     6=>['name'=>'Formal Sandals','price'=>359],
@@ -29,8 +29,8 @@ if(isset($_POST['place_order'])){
             $qty[]=$count;
             $total += $products[$pid]['price']*$count;
         }
-        $stmt=$conn->prepare("INSERT INTO orders (user_name,Items,quantity) VALUES (?,?,?)");
-        $stmt->bind_param("ssi", $_SESSION['username'], implode(", ", $items), array_sum($qty));
+        $stmt=$conn->prepare("INSERT INTO orders (user_name,Items,quantity)VALUES(?,?,?)");
+        $stmt->bind_param("ssi",$_SESSION['username'],implode(", ",$items),array_sum($qty));
         $stmt->execute();
         $_SESSION['cart']=[];
         $msg="Order placed successfully!";

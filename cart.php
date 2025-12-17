@@ -15,7 +15,7 @@ if(!isset($_SESSION['cart'])){
 $products = [
     1=>['name'=>'White Leather Sandals','price'=>359],
     2=>['name'=>'Elegant Red High Heels','price'=>1200],
-    3=>['name'=>'Hiking Boots','price'=>5599],
+    3=>['name'=>'Hiking Boots','price'=>499],
     4=>['name'=>'Elegant Nude High Heels','price'=>1200],
     5=>['name'=>'Doll Shoes','price'=>269],
     6=>['name'=>'Formal Sandals','price'=>359],

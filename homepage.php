@@ -10,7 +10,7 @@ if(!isset($_SESSION['cart'])) $_SESSION['cart']=[];
 $products = [
     1=>['name'=>'White Leather Sandals','price'=>359,'img'=>'WHITE SANDALS.jpg','desc'=>'Comfortable loafers, sizes 7-13. Perfect for casual wear.'],
     2=>['name'=>'Elegant Red High Heels','price'=>1200,'img'=>'RED CLASSY HIGH HEELS.jpg','desc'=>'Leather pair with 3-inch heel, sizes 5-11. Ideal for parties or work.'],
-    3=>['name'=>'Hiking Boots','price'=>5599,'img'=>'HIKING BOOTS.jpg','desc'=>'Waterproof pair, sizes 7-13. Built for trails and tough terrains.'],
+    3=>['name'=>'Hiking Boots','price'=>499,'img'=>'HIKING BOOTS.jpg','desc'=>'Waterproof pair, sizes 7-13. Built for trails and tough terrains.'],
     4=>['name'=>'Elegant Nude High Heels','price'=>1200,'img'=>'NUDE CLASSY HIGH HEELS.jpg','desc'=>'Leather pair with 3-inch heel, sizes 5-11. Ideal for parties or work.'],
     5=>['name'=>'Doll Shoes','price'=>269,'img'=>'DOLLSHOES.jpg','desc'=>'Casual and Comfortable for everyday use, sizes 7-11.'],
     6=>['name'=>'Formal Sandals','price'=>359,'img'=>'FORMAL SANDALS.jpg','desc'=>'Casual, sizes 7-11. Ideal for work.'],

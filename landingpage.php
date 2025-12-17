@@ -210,21 +210,21 @@
                 <img src="WHITE SANDALS.jpg" alt="Classic White Sneakers">
                 <h3>Classic White Sneakers</h3>
                 <p>Comfortable canvas pair, sizes 6-12. Perfect for casual outings.</p>
-                <p><strong>₱2,799</strong></p>
+                <p><strong>₱359</strong></p>
             </div>
 
             <div class="product-card">
                 <img src="RED CLASSY HIGH HEELS.jpg" alt="Elegant Red Heels">
                 <h3>Elegant Red Heels</h3>
                 <p>Leather pair with 3-inch heel, sizes 5-11. Ideal for parties or work.</p>
-                <p><strong>₱4,479</strong></p>
+                <p><strong>₱1,200</strong></p>
             </div>
 
             <div class="product-card">
                 <img src="HIKING BOOTS.jpg" alt="Hiking Boots">
                 <h3>Hiking Boots</h3>
                 <p>Waterproof pair, sizes 7-13. Built for trails and tough terrains.</p>
-                <p><strong>₱5,599</strong></p>
+                <p><strong>₱499</strong></p>
             </div>
 
         </div>
