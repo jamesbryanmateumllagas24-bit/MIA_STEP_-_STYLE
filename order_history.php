@@ -90,6 +90,7 @@ th{
         <a href="homepage.php" class="button">Back to Shop</a>
         <a href="track_order.php" class="button">Track Order</a>
     </p>
+    
 </header>
 
 <?php if(empty($orders)): ?>

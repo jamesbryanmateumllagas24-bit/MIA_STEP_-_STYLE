@@ -9,6 +9,17 @@ $db   = "m.i.a";
 $conn = new mysqli($host, $user, $pass, $db);
 if($conn->connect_error) die("Connection failed: ".$conn->connect_error);
 
+
+if(isset($_GET['confirm'])){
+    $order_id = intval($_GET['confirm']);
+    $stmt = $conn->prepare("UPDATE orders SET order_status='Confirmed' WHERE order_numbers=?");
+    $stmt->bind_param("i", $order_id);
+    $stmt->execute();
+    header("Location: admin_dashboard.php");
+    exit;
+}
+
+
 if(isset($_POST['add_product'])){
     $product_id = $_POST['product_id'];
     $product_name = $_POST['product_name'];
@@ -25,6 +36,7 @@ if(isset($_POST['add_product'])){
     }
 }
 
+
 $totalUsers = $conn->query("SELECT COUNT(*) AS total FROM users")->fetch_assoc()['total'];
 $totalOrders = $conn->query("SELECT COUNT(*) AS total FROM orders")->fetch_assoc()['total'];
 $totalRevenue = $conn->query("
@@ -32,6 +44,9 @@ $totalRevenue = $conn->query("
     FROM `order details table` od
     JOIN `product` p ON od.product_id = p.Product_id
 ")->fetch_assoc()['total_revenue'] ?? 0;
+
+
+$orders_result = $conn->query("SELECT * FROM orders ORDER BY order_numbers DESC");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,7 +55,6 @@ $totalRevenue = $conn->query("
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Dashboard</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
 <style>
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding:0; display:flex; background:#ffe6f0; }
 .sidebar { width:280px; background:#ff4da6; color:white; height:100vh; padding:20px; box-sizing:border-box; border-radius:0 20px 20px 0; position:relative; }
@@ -65,18 +79,20 @@ input, button, textarea { padding:8px; margin:5px; border-radius:5px; border:non
 button { background:#ff4da6; color:white; cursor:pointer; }
 button:hover { background:#e60073; }
 .message { margin:10px 0; font-weight:bold; color:green; }
+table { width:100%; border-collapse:collapse; margin-top:20px; }
+th, td { border:1px solid #ffb3d9; padding:10px; text-align:center; }
+a.confirm-btn { color:white; background:#ff4da6; padding:5px 10px; border-radius:5px; text-decoration:none; }
+a.confirm-btn:hover { background:#e60073; }
 </style>
 </head>
 
 <body>
-
 <div class="sidebar">
     <h2>Admin Panel</h2>
     <ul>
         <li><a href="admin_dashboard.php">Dashboard</a></li>
         <li><a href="homepage.php">Homepage</a></li>
     </ul>
-
     <div class="account-icon">
         <i class="fas fa-user-circle"></i>
     </div>
@@ -104,6 +120,7 @@ button:hover { background:#e60073; }
         </div>
     </div>
 
+    
     <form method="post">
         <h3>Add New Product</h3>
         <?php if(isset($message)) echo "<div class='message'>".$message."</div>"; ?>
@@ -115,7 +132,33 @@ button:hover { background:#e60073; }
         <button type="submit" name="add_product">Add Product</button>
     </form>
 
-</div>
+    
+    <div class="card large-card">
+        <h3>Pending Orders</h3>
+        <table>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            <?php while($order = $orders_result->fetch_assoc()): ?>
+            <tr>
+                <td>#<?= $order['order_numbers'] ?></td>
+                <td><?= htmlspecialchars($order['user_name']) ?></td>
+                <td><?= $order['order_status'] ?></td>
+                <td>
+                    <?php if($order['order_status'] == 'Processing'): ?>
+                        <a class="confirm-btn" href="admin_dashboard.php?confirm=<?= $order['order_numbers'] ?>">Confirm</a>
+                    <?php else: ?>
+                        Confirmed
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <?php endwhile; ?>
+        </table>
+    </div>
 
+</div>
 </body>
 </html>

@@ -1,48 +1,59 @@
 <?php
 session_start();
-if(!isset($_SESSION['username'])){ header("Location:index.php"); exit; }
+if (!isset($_SESSION['username'])) {
+    header("Location: index.php");
+    exit;
+}
 
-$host="127.0.0.1"; 
-$user="root"; 
-$pass=""; 
-$db="m.i.a";
+$host = "127.0.0.1";
+$user = "root";
+$pass = "";
+$db   = "m.i.a";
 
-$conn = new mysqli($host,$user,$pass,$db);
-if($conn->connect_error) die("Connection failed: ".$conn->connect_error);
+$conn = new mysqli($host, $user, $pass, $db);
+if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
 
 $msg = '';
 
-if(isset($_POST['place_order'])){
-    if(empty($_SESSION['cart'])){
-        $msg="Your cart is empty!";
+if (isset($_POST['place_order'])) {
+    if (empty($_SESSION['cart'])) {
+        $msg = "Your cart is empty!";
     } else {
-        $items=[];
-        $total_qty=0;
+        $items = [];
+        $total_qty = 0;
 
-        foreach($_SESSION['cart'] as $pid=>$count){
-            $stmt=$conn->prepare("SELECT product_name FROM product WHERE Product_id=?");
-            $stmt->bind_param("i",$pid);
+        foreach ($_SESSION['cart'] as $pid => $count) {
+            $stmt = $conn->prepare(
+                "SELECT product_name FROM product WHERE Product_id=?"
+            );
+            $stmt->bind_param("i", $pid);
             $stmt->execute();
-            $row=$stmt->get_result()->fetch_assoc();
-            if($row){
-                $items[]=$row['product_name']." x".$count;
-                $total_qty+=$count;
+            $stmt->store_result();
+            $stmt->bind_result($product_name);
+            $stmt->fetch();
+
+            if ($stmt->num_rows > 0) {
+                $items[] = $product_name . " x" . $count;
+                $total_qty += $count;
             }
+            $stmt->close();
         }
 
-        $stmt=$conn->prepare(
-            "INSERT INTO orders (user_name,Items,quantity) VALUES (?,?,?)"
+        $stmt = $conn->prepare(
+            "INSERT INTO orders (user_name, Items, quantity) VALUES (?, ?, ?)"
         );
-        $stmt->bind_param("ssi",$_SESSION['username'],implode(", ",$items),$total_qty);
+        $items_str = implode(", ", $items);
+        $stmt->bind_param("ssi", $_SESSION['username'], $items_str, $total_qty);
         $stmt->execute();
+        $stmt->close();
 
-        $_SESSION['cart']=[];
-        $msg="Order placed successfully!";
+        $_SESSION['cart'] = [];
+        $msg = "Order placed successfully!";
     }
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Checkout - M.I.A</title>
@@ -64,9 +75,9 @@ button{padding:8px 12px;background:#ff4da6;color:#fff;border:none;border-radius:
 </header>
 
 <div class="checkout">
-<?php if($msg) echo "<p style='text-align:center;color:green;'>$msg</p>"; ?>
+<?php if ($msg) echo "<p style='text-align:center;color:green;'>$msg</p>"; ?>
 
-<?php if(empty($_SESSION['cart'])): ?>
+<?php if (empty($_SESSION['cart'])): ?>
 <p style="text-align:center;">Your cart is empty.</p>
 
 <?php else: ?>
@@ -81,32 +92,39 @@ button{padding:8px 12px;background:#ff4da6;color:#fff;border:none;border-radius:
 </tr>
 
 <?php
-$total=0;
-foreach($_SESSION['cart'] as $pid=>$qty):
-    $stmt=$conn->prepare(
+$total = 0;
+foreach ($_SESSION['cart'] as $pid => $qty):
+    $stmt = $conn->prepare(
         "SELECT product_name, price, image_link FROM product WHERE Product_id=?"
     );
-    $stmt->bind_param("i",$pid);
+    $stmt->bind_param("i", $pid);
     $stmt->execute();
-    $p=$stmt->get_result()->fetch_assoc();
-    if(!$p) continue;
+    $stmt->store_result();
+    $stmt->bind_result($product_name, $price, $image_link);
+    $stmt->fetch();
 
-    $price=$p['price']*$qty;
-    $total+=$price;
+    if ($stmt->num_rows === 0) {
+        $stmt->close();
+        continue;
+    }
+
+    $subtotal = $price * $qty;
+    $total += $subtotal;
 ?>
 <tr>
-<td>
-    <img src="<?=htmlspecialchars($p['image_link'])?>" alt="product">
-</td>
-<td><?=htmlspecialchars($p['product_name'])?></td>
-<td><?=$qty?></td>
-<td>₱<?=number_format($price,2)?></td>
+<td><img src="<?= htmlspecialchars($image_link) ?>" alt="product"></td>
+<td><?= htmlspecialchars($product_name) ?></td>
+<td><?= $qty ?></td>
+<td>₱<?= number_format($subtotal, 2) ?></td>
 </tr>
-<?php endforeach; ?>
+<?php
+$stmt->close();
+endforeach;
+?>
 
 <tr>
 <td colspan="3"><strong>Total</strong></td>
-<td>₱<?=number_format($total,2)?></td>
+<td>₱<?= number_format($total, 2) ?></td>
 </tr>
 </table>
 

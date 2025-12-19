@@ -15,7 +15,7 @@ $db="m.i.a";
 $conn = new mysqli($host,$user,$pass,$db);
 if($conn->connect_error) die("Connection failed: ".$conn->connect_error);
 
-// Fetch products from database
+
 $products = [];
 $result = $conn->query("SELECT * FROM `product` ORDER BY Product_id ASC");
 while($row = $result->fetch_assoc()){

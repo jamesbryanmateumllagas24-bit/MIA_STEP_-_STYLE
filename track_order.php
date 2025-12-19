@@ -1,31 +1,46 @@
 <?php
 session_start();
-if(!isset($_SESSION['username'])){ header("Location:index.php"); exit; }
+if(!isset($_SESSION['username'])){
+    header("Location:index.php");
+    exit;
+}
 
-$host="127.0.0.1"; $user="root"; $pass=""; $db="m.i.a";
+$host="127.0.0.1"; 
+$user="root"; 
+$pass=""; 
+$db="m.i.a";
+
 $conn=new mysqli($host,$user,$pass,$db);
 if($conn->connect_error) die("Connection failed: ".$conn->connect_error);
 
-$username=$_SESSION['username'];
-$stmt=$conn->prepare("SELECT * FROM orders WHERE user_name=? ORDER BY order_numbers DESC LIMIT 1");
-$stmt->bind_param("s",$username);
+
+$stmt = $conn->prepare("SELECT user_id, customer_name, address FROM users WHERE user_name=?");
+$stmt->bind_param("s", $_SESSION['username']);
 $stmt->execute();
-$order=$stmt->get_result()->fetch_assoc();
-$status="No orders yet";
+$user_result = $stmt->get_result()->fetch_assoc();
+$user_id = $user_result['user_id'];
+$customer_name = $user_result['customer_name'];
+$address = $user_result['address'] ?? "No address available";
+
+
+$stmt = $conn->prepare("SELECT * FROM orders WHERE user_name=? ORDER BY order_numbers DESC LIMIT 1");
+$stmt->bind_param("s", $_SESSION['username']);
+$stmt->execute();
+$order = $stmt->get_result()->fetch_assoc();
+
+$status = "No orders yet";
 
 if($order){
-    $elapsed=time()-strtotime($order['order_date']??date('Y-m-d H:i:s'));
-    if($elapsed<600) $status="Processing";
-    elseif($elapsed<1200) $status="Shipped";
-    elseif($elapsed<1800) $status="Out for Delivery";
-    else $status="Delivered";
+    if($order['order_status'] == 'Confirmed'){
+        $status = "Confirmed by Admin";
+    } else {
+        $elapsed = time() - strtotime($order['order_date'] ?? date('Y-m-d H:i:s'));
+        if($elapsed < 600) $status = "Processing";
+        elseif($elapsed < 1200) $status = "Shipped";
+        elseif($elapsed < 1800) $status = "Out for Delivery";
+        else $status = "Delivered";
+    }
 }
-
-$stmt = $conn->prepare("SELECT address FROM users WHERE user_id=?");
-$stmt->bind_param("i", $_SESSION['user_id']);
-$stmt->execute();
-$result = $stmt->get_result()->fetch_assoc();
-$address = $result['address'] ?? "No address available";
 ?>
 <!DOCTYPE html>
 <html>
@@ -54,8 +69,8 @@ a{text-decoration:none;color:#e60073;}
 <?php else: ?>
 <h2>Order Details</h2>
 <p>Order ID: <strong>#<?=$order['order_numbers']?></strong></p>
-<p>Customer: <strong><?=htmlspecialchars($order['user_name'])?></strong></p>
-<p>Address: <strong><?=$address?></strong></p>
+<p>Customer: <strong><?=htmlspecialchars($customer_name)?></strong></p>
+<p>Address: <strong><?=htmlspecialchars($address)?></strong></p>
 <p>Status: <span class="status"><?=$status?></span></p>
 
 <table>
