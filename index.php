@@ -146,8 +146,6 @@ function showTab(tab){
   document.getElementById('loginForm').style.display = (tab === 'login') ? 'block' : 'none';
   document.getElementById('registerForm').style.display = (tab === 'register') ? 'block' : 'none';
 }
-
-
 showTab("<?= $activeTab ?>");
 </script>
 <script>
