@@ -8,10 +8,14 @@ Ensured database column names matched the prepared INSERT query verified primary
 Result:
 Registration now works on all PHP server configurations. Duplicate username/email detection functions correctly. New users can register successfully
 Registered users can log in without errors
-script>
-<?php 
-if(isset($_POST['register'])) echo "showTab('register');";
-elseif(isset($_POST['login'])) echo "showTab('login');";
-?>
- <script/>\
+<script>
+function showTab(tab){
+  document.getElementById('loginForm').style.display = (tab === 'login') ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = (tab === 'register') ? 'block' : 'none';
+}
+
+
+showTab("<?= $activeTab ?>");
+</script>
+remove the 
  
