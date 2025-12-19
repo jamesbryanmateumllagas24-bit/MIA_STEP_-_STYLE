@@ -5,9 +5,7 @@ Replaced $stmt->get_result() with:
 $stmt->store_result()
 $stmt->num_rows for duplicate username/email checking
 Ensured database column names matched the prepared INSERT query verified primary key column was correctly set to AUTO_INCREMENT Re-tested the registration workflow
-Result:
-Registration now works on all PHP server configurations. Duplicate username/email detection functions correctly. New users can register successfully
-Registered users can log in without errors
+Result: Registration now works on all PHP server configurations. Duplicate username/email detection functions correctly. New users can register successfully Registered users can log in without errors
 <script>
 function showTab(tab){
   document.getElementById('loginForm').style.display = (tab === 'login') ? 'block' : 'none';
