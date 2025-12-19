@@ -3,3 +3,11 @@ The bug preventing new users from registering is caused by the use of $stmt->get
 
 We fixed the registration bug as a group by replacing get_result() with store_result() to properly check for duplicate usernames/emails, ensured the database columns and auto-increment were correct, and verified that new users could register and log in successfully.
 
+Replaced $stmt->get_result() with:
+$stmt->store_result()
+$stmt->num_rows for duplicate username/email checking
+Ensured database column names matched the prepared INSERT query verified primary key column was correctly set to AUTO_INCREMENT Re-tested the registration workflow
+
+Result:
+Registration now works on all PHP server configurations. Duplicate username/email detection functions correctly. New users can register successfully
+Registered users can log in without errors
