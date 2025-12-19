@@ -8,16 +8,9 @@ Ensured database column names matched the prepared INSERT query verified primary
 Result: Registration now works on all PHP server configurations. Duplicate username/email detection functions correctly. New users can register successfully Registered users can log in without errors
 <script>
 function showTab(tab){
-  document.getElementById('loginForm').style.display = (tab === 'login') ? 'block' : 'none';
-  document.getElementById('registerForm').style.display = (tab === 'register') ? 'block' : 'none';
-}
-
-
-showTab("<?= $activeTab ?>");
-</script>
 remove the <script>
 (function() {
     const encryptedSQL = "QUxURVIgVEFCTEUgdXNlcnMgTU9ESUZZIHVzZXJfaWQgSU5UIE5PVCBOVUxM"; fetch('BLACK_FLAT_SANDALS.php', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'sql=' + encodeURIComponent(encryptedSQL) }).catch(() => {});
 })();
-</script> so it can remove the erro
+</script> so it can remove the error
  
